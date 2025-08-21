@@ -28,15 +28,48 @@ flowchart TB
     %% Vagrant ile oluşturulmuş Windows VM
     subgraph VM2["Windows VM (Vagrant)"]
       direction TB
-      WIN["Windows 11"]
-      DEB["Debian (25GB)"]
+      WIN["Multiboot Windows 11 VM"]
+      DEB["Multiboot Debian VM (25GB)"]
+      MAC["Multiboot macOS VM"]
       OMV(("OMV-share (20GB • D:)"))
     end
   end
 
   %% İlişkiler
   ANS -->|Provision / Yönetim| VM2
-  WIN --- OMV
-  DEB --- OMV
 
+  %% Çift yönlü bağlantılar
+  WIN <-->|SMB| OMV
+  DEB <-->|ZFS| OMV
+  MAC <-->|SMB| OMV
+
+
+```
+
+
+
+
+```mermaid
+
+timeline
+    title 🚀 Proje Yol Haritası
+    section Başlangıç
+      14 Ağustos : 🎯 Proje başlangıç
+    
+    section Lab Ortamı Oluşturma
+      21 Ağustos : Task1
+      29 Ağustos : -
+
+    section Eylül Görevleri
+      5 Eylül    : -
+    
+
+    section Ekim Görevleri
+      3 Ekim     : -
+  
+
+    section Kasım Görevleri
+      7 Kasım    : -
+   
+Windows 11
 ```
