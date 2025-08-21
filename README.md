@@ -4,30 +4,33 @@ Bu sayfada, projenin tamamının ana hedefi yer almaktadır.
 
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': {
-  'primaryColor': '#3b82f6',
-  'primaryBorderColor': '#1e40af',
-  'primaryTextColor': '#eff6ff',
-  'lineColor': '#60a5fa',
-  'tertiaryColor': '#1e3a8a'
+  'primaryColor': '#5a1f0f',
+  'primaryBorderColor': '#fb923c',
+  'primaryTextColor': '#ffedd5',
+  'lineColor': '#fb923c',
+  'tertiaryColor': '#fb923c',
+  'clusterBkg': '#0b1020',
+  'clusterBorderColor': '#f97316',
+  'fontFamily': 'Inter, ui-sans-serif, system-ui'
 }}}%%
 
 flowchart TB
 
-  %% Bare Metal Host
-  subgraph HOST["🖥️ Bare Metal Host"]
+  %% Bare Metal Host (2 VM içerir)
+  subgraph HOST["Bare Metal Host"]
     direction LR
 
     %% Sidecar VM
-    subgraph VM1["⚙️ Sidecar VM"]
+    subgraph VM1["Sidecar VM"]
       ANS["Ansible Controller"]
     end
 
-    %% Windows VM (Vagrant ile oluşturulmuş)
-    subgraph VM2["🪟 Windows VM (Vagrant)"]
+    %% Vagrant ile oluşturulmuş Windows VM
+    subgraph VM2["Windows VM (Vagrant)"]
       direction TB
-      WIN["🪟 Windows 11"]
-      DEB["🐧 Debian (25GB)"]
-      OMV["📦 OMV-share (20GB - D:)"]
+      WIN["Windows 11"]
+      DEB["Debian (25GB)"]
+      OMV(("OMV-share (20GB • D:)"))
     end
   end
 
@@ -35,4 +38,5 @@ flowchart TB
   ANS -->|Provision / Yönetim| VM2
   WIN --- OMV
   DEB --- OMV
+
 ```
