@@ -45,7 +45,15 @@ flowchart TB
 
 
 ```
+---
+## Hiyerarch
 
+  The main goal of our project is to enable users to access their files from anywhere, with complete freedom and flexibility. Files will be stored distributed throughout your own repositories, allowing you to have full access to them wherever you are. The topology seen above is the lab environment created for the first phase. This lab environment involves a topology where the OMV disk, located on a multi-boot computer, is automatically mounted regardless of the operating system it's running on, and automatically mounted to the operating system's home folder using a suitable file sharing protocol. This allows you to easily access your OMV-shared folder from anywhere, regardless of your location. The entire structure in the task is managed by sidecar ansible. You can view the task's process diagram below:
+
+
+
+
+---
 
 
 
