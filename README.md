@@ -52,7 +52,7 @@ flowchart TB
 ```mermaid
 
 timeline
-    title 🚀 Proje Yol Haritası
+    title Project Roadmap
     section Başlangıç
       14 Ağustos : 🎯 Proje başlangıç
     
