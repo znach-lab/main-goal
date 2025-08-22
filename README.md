@@ -40,7 +40,7 @@ flowchart TB
 
   %% Çift yönlü bağlantılar
   WIN <-->|SMB| OMV
-  DEB <-->|ZFS| OMV
+  DEB <-->|NFS| OMV
   MAC <-->|SMB| OMV
 
 
