@@ -59,8 +59,11 @@ flowchart TB
   'lineColor': '#f97316',
   'actorLineColor': '#f97316',
   'signalColor': '#f97316',
-  'signalTextColor': '#ffffff'
+  'signalTextColor': '#ffffff',
+  'actorBkg': '#808080',
+  'signalBkg': '#808080'
 }}}%%
+
 
 
 sequenceDiagram
