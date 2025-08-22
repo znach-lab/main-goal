@@ -98,7 +98,7 @@ sequenceDiagram
 timeline
     title Project Roadmap
     section Başlangıç
-      14 Ağustos : 🎯 Proje başlangıç
+      14 Ağustos : Proje başlangıç
     
     section Lab Ortamı Oluşturma
       21 Ağustos : Task1
