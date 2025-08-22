@@ -54,17 +54,36 @@ flowchart TB
 
 ---
 ```mermaid
-sequenceDiagram
-    CMD->>+AnsibleVM: Type "vagrant up" on command line<br/>Ansible VM has before up trigger.<br> First of all, Its allocated<br> {subnet} .10 IP addresses for <br>WinVM dual boot and <br>DebianVM dualboot devices and <br>saved these IP values in "hosts_win.ini"<br> and "hosts_lin.ini".
-    AnsibleVM->>+OMV VM: OMV VM installation <br>is triggered by a trigger. <br> AnsibleVM:🔴offline
-    OMV VM->>+WinVM Dualboot:The OMV VM installation<br> has been successfully installed<br> in disk.vmdk. This disk folder <br>will be shared with Windows <br>via rsync. The second trigger <br>begins the dualboot <br>Windows installation.
-    WinVM Dualboot-->>-AnsibleVM:When the Dual Boot Windows VM is booted, it becomes controllable with Ansible.<br> Then, qemu automatically installs the latest version and enables<br> the necessary features for whpx and virtualization.After these operations, <br>Vagrantfile sends a boot trigger to the AnsibleVM for the remaining operations.
-    AnsibleVM->>WinVM Dualboot: When the Ansible VM is opened, it will use the playbooks in it sequentially.
-    AnsibleVM->>WinVM Dualboot: The shrink_disk.yml file works for Windows VMs, shrinking a 20GB area from the<br> C: drive and formatting it as D:// in exFAT format. The reason for formatting it in exFAT <br>is that this drive will contain our OMV disks, and since the exFAT format can be read by Windows, <br> Linux, and macOS without any problems, they will provide seamless access to our OMV virtual machine.
-    AnsibleVM->>WinVM Dualboot:
-   
-    AnsibleVM->>DebianVM Dualboot: 
+%%{init: {'theme':'default', 'themeVariables': {
+  'lineColor': '#f97316',
+  'actorLineColor': '#f97316',
+  'signalColor': '#f97316',
+  'signalTextColor': '#ffffff'
+}}}%%
 
+
+sequenceDiagram
+    autonumber
+    participant CMD
+    participant AnsibleVM
+    participant OMV as "OMV VM"
+    participant WIN as "WinVM Dualboot"
+    participant DEB as "DebianVM Dualboot"
+
+    CMD->>+AnsibleVM: Type "vagrant up" on command line<br/>Ansible VM has a pre-up trigger<br/>First it allocates {subnet}.10 IP for<br/>WinVM Dualboot and DebianVM Dualboot<br/>Then it saves these IP values into hosts_win.ini and hosts_lin.ini
+    AnsibleVM->>+OMV: OMV VM installation is triggered by a trigger<br/>AnsibleVM offline
+    OMV->>+WIN: OMV VM is installed into disk.vmdk<br/>This disk folder will be shared with Windows via rsync<br/>The second trigger starts Dualboot Windows installation
+    WIN-->>+AnsibleVM: After Dualboot Windows starts it becomes controllable with Ansible<br/>Then qemu is installed or updated and WHPX features are enabled<br/>After that the Vagrantfile sends a boot trigger to AnsibleVM for remaining operations
+    AnsibleVM->>+WIN: When AnsibleVM is up it runs its playbooks in sequence
+    AnsibleVM-->>+WIN: shrink_disk.yml shrinks 20 GB from C: and formats as D:// (exFAT)<br/>Reason: D:// will host OMV disks<br/>exFAT is readable by Windows - Linux - macOS<br/>This provides seamless access to the OMV VM
+    AnsibleVM-->>+WIN: copy_disks.yml copies OMV disks disk.vmdk and disk1.vmdk<br/>from the shared folder to the new exFAT formatted D:// drive
+    AnsibleVM-->>+WIN: start_vm.yml creates two files in Windows<br/>A PS1 file with qemu startup parameters using WHPX to boot disk.vmdk and disk1.vmdk in BIOS mode<br/>A BAT file in Startup that triggers the PS1 at every Windows boot<br/>This automatically starts qemu and the OMV VM
+    AnsibleVM->>+DEB: After WinVM Dualboot tasks are done a trigger shuts down WinVM<br/>Then installation continues with a custom Debian ISO with preseed<br/>During install it gets an IP via DHCP and derives the subnet<br/>Then it assigns {subnet}.10 statically so DebianVM Dualboot is manageable with Ansible
+    AnsibleVM-->>+DEB: install_qemu_on_debian.yml installs qemu automatically on DebianVM Dualboot
+    AnsibleVM-->>+DEB: start_vm_when_reboot_debian.yml adds qemu parameters so that on every reboot<br/>a service auto starts the OMV VM using disk.vmdk and disk1.vmdk from the mounted OMV disk<br/>Port forwarding sets OMV SSH to 2222 and HTTP to 8080
+    AnsibleVM-->>+DEB: change_vda.yml attaches the WinVM Dualboot virtual disk as a second disk<br/>so DebianVM can access the OMV VM on first boot<br/>On this VM the exFAT partition appears as vdb2 but on the main VM it will be vda2<br/>To avoid issues fstab is updated from vdb2 to vda2
+    AnsibleVM-->>+DEB: After all Debian tasks finish shutdown_lin.yml powers off DebianVM Dualboot
+    AnsibleVM-->>+CMD: When all VMs are ready extra VM definitions are cleaned via virsh<br/>Then ./change_boot.sh makes the DebianVM Dualboot disk bootable in WinVM<br/>and sets it as the first boot device
 ```
 ---
 
